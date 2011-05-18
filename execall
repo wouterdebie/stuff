@@ -1,0 +1,19 @@
+#!/bin/bash
+cmd=$1
+
+xservers=$( knife search node "server_env:production" -i | sort )
+servers=$(echo $servers |perl -pe 's/\..*?local//g' )
+
+for i in $servers; do
+  echo "==== server $i ===="
+  ping -t1 -c1 $i &> /dev/null
+
+  if [ "$?" == "0" ]; then
+    echo "Executing ssh $i \"$@\""
+    echo "Output:"
+    ssh $i "$@"
+  else
+    echo "Server$i not available!"
+  fi
+  echo -e
+done

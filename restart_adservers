@@ -1,0 +1,11 @@
+#!/bin/bash
+
+xservers=$( knife search node "server_env:production" -i | sort )
+servers=$(echo $servers |perl -pe 's/\..*?local//g' )
+
+for i in $servers; do 
+  SERVERS=$i cap production deploy:restarts
+  echo "Press any key to continue.."
+#  read
+  sleep 30
+done
