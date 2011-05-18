@@ -1,0 +1,22 @@
+#!/usr/bin/env ruby
+require 'socket'
+require 'rubygems'
+require 'serialport'
+
+
+sp = SerialPort.new "/dev/cu.usbmodem641", 115200
+
+STDOUT.sync = true
+s = TCPSocket.new("collector01", 1234)
+actions = 0
+s.write("start fountain\r\n")
+while(b = s.recv(9)) do
+  (action, long, lat) = b.unpack 'Cff'
+  action = action.chr
+#  if %w{c t o I}.include?(action) then
+    #print action
+    sp.write action   
+#  end
+
+end
+
