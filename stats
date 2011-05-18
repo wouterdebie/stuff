@@ -1,0 +1,28 @@
+#!/bin/bash
+
+dirs=$(find ~/prjs -type d -maxdepth 1)
+
+total=0
+added=0
+deleted=0
+
+for dir in $dirs; do
+  if [ -d $dir/.git ]; then
+    echo "Statting $dir"
+    pushd $dir &> /dev/null
+    git pull
+    gitstats=$(gitstat -a -s '1 weeka ago' | grep ^Total | awk -F"[ /()+-]" '{print $3 " " $8 " " $10}')
+    read t a d <<< $gitstats
+    echo "T: $t, A: $a, D: $d"
+    total=$(($total+$t))
+    added=$(($added+$a))
+    deleted=$(($deleted+$d))
+    popd
+  fi
+done
+echo -n
+echo -e "Total\t\t$total"
+echo -e "Added\t\t$added"
+echo -e "Deleted\t\t$deleted"
+echo -e "Modified\t$(($added+$deleted))"
+echo "Total commits: $total, added lines: $added, deleted lines: $deleted, modified lines: $(($added+$deleted))"
